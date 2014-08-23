@@ -47,37 +47,87 @@ object List { // `List` companion object. Contains functions for creating and wo
     foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
 
 
-  def tail[A](l: List[A]): List[A] = sys.error("todo")
+  def tail[A](l: List[A]): List[A] = {
+    l match {
+		case Nil => sys.error("Error: Empty list passed to tail function")
+		case Cons(_,t) => t
+    }
+  }
 
-  def setHead[A](l: List[A], h: A): List[A] = sys.error("todo")
+  def setHead[A](l: List[A], h: A): List[A] = {
+    l match {
+		case Nil => sys.error("Error: Empty list passed to setHead function")
+		case Cons(_,t) => Cons(h,t)
+    }
+  }
 
-  def drop[A](l: List[A], n: Int): List[A] = sys.error("todo")
+  def drop[A](l: List[A], n: Int): List[A] = {
+    if (n <= 0) l
+    else l match {
+      case Nil => Nil
+      case Cons(_,t) => drop(t, n-1) 
+    }
+  }
 
-  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = sys.error("todo")
+  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = {
+    l match {
+      case Cons(h,t) if f(h) => dropWhile(t, f) 
+      case _ => l
+    }
+  }
 
-  def init[A](l: List[A]): List[A] = sys.error("todo")
+  def init[A](l: List[A]): List[A] = {
+    l match { 
+      case Nil => sys.error("Error: Empty list passed to init function")
+      case Cons(_,Nil) => Nil
+      case Cons(h,t) => Cons(h,init(t))
+    }
+  }
 
-  def length[A](l: List[A]): Int = sys.error("todo")
+  def length[A](l: List[A]): Int = {
+    foldRight(l, 0)((_,len) => len + 1)
+  }
 
-  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = sys.error("todo")
+  @annotation.tailrec
+  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = {
+    l match {
+    case Nil => z
+    case Cons(h,t) => foldLeft(t, f(z, h))(f)
+    }
+  }
 
-  def sumViaFoldLeft(nums: List[Int]): Int = sys.error("todo")
+  def sumViaFoldLeft(nums: List[Int]): Int = {
+    foldLeft(nums, 0)(_ + _)
+  }
 
-  def productViaFoldLeft(nums: List[Double]): Double = sys.error("todo")
+  def productViaFoldLeft(nums: List[Double]): Double = {
+    foldLeft(nums, 1.0)(_ * _)
+  }
 
-  def lengthViaFoldLeft(l: List[_]): Int = sys.error("todo")
+  def lengthViaFoldLeft(l: List[_]): Int = {
+    foldLeft(l, 0)((len, _) => len + 1)
+  }
+  def reverse[A](l: List[A]): List[A] = {
+    foldLeft(l, Nil:List[A])((h, t) => Cons(t, h))
+  }
 
-  def reverse[A](l: List[A]): List[A] = sys.error("todo")
+  def appendViaFoldRight[A](l1: List[A], l2: List[A]): List[A] = {
+    foldRight(l1, l2)(Cons(_,_))
+  }
 
-  def appendViaFoldRight[A](l1: List[A], l2: List[A]): List[A] = sys.error("todo")
+  def appendViaFoldLeft[A](a1: List[A], a2: List[A]): List[A] = {
+    foldLeft(reverse(a1), a2)((h, t) => Cons(t, h))
+  }
 
-  def appendViaFoldLeft[A](a1: List[A], a2: List[A]): List[A] = sys.error("todo")
+  def concat[A](l: List[List[A]]): List[A] = {
+    foldRight(l, Nil:List[A])(append(_, _))
+  }
 
-  def concat[A](l: List[List[A]]): List[A] = sys.error("todo")
+  def add1[T:Numeric](nums: List[T])(implicit ev: Numeric[T]): List[T] = ???
 
-  def add1[T](nums: List[T])(implicit ev: Numeric[T]): List[T] = sys.error("todo")
-
-  def doubleToString(l: List[Double]): List[String] = sys.error("todo")
+  def doubleToString(l: List[Double]): List[String] = {
+    foldRight(l, Nil:List[String])((h, t) => Cons(h.toString, t))
+  }
 
   def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
 
