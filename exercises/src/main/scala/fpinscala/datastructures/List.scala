@@ -129,17 +129,35 @@ object List { // `List` companion object. Contains functions for creating and wo
     foldRight(l, Nil:List[String])((h, t) => Cons(h.toString, t))
   }
 
-  def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
+  def map[A,B](l: List[A])(f: A => B): List[B] = {
+    foldRight(l, Nil:List[B])((h, t) => Cons(f(h), t))
+  }
+  def filter[A](l: List[A])(f: A => Boolean): List[A] = {
+    foldRight(l, Nil:List[A])((h, t) => if (f(h)) Cons(h, t) else t)
+  }
 
-  def filter[A](l: List[A])(f: A => Boolean): List[A] = sys.error("todo")
+  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] = {
+    concat(map(l)(f))
+  }
+  def filterViaFlatMap[A](l: List[A])(f: A => Boolean): List[A] = {
+    flatMap(l)(a => if(f(a)) List(a) else Nil)
+  }
 
-  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] = sys.error("todo")
+  def addPairwise(a: List[Int], b: List[Int]): List[Int] = {
+    (a, b) match {
+      case(_, Nil) => Nil
+      case(Nil, _) => Nil
+      case(Cons(h1, t1), Cons(h2, t2)) => Cons(h1+h2, addPairwise(t1, t2))
+    }
+  }
 
-  def filterViaFlatMap[A](l: List[A])(f: A => Boolean): List[A] = sys.error("todo")
+  def zipWith[A,B,C](a: List[A], b: List[B])(f: (A,B) => C): List[C] = {
+    (a, b) match {
+      case (_, Nil) => Nil
+      case (Nil, _) => Nil
+      case (Cons(h1,t1), Cons(h2,t2)) => Cons(f(h1,h2), zipWith(t1,t2)(f))
+    }
+  }
 
-  def addPairwise(a: List[Int], b: List[Int]): List[Int] = sys.error("todo")
-
-  def zipWith[A,B,C](a: List[A], b: List[B])(f: (A,B) => C): List[C] = sys.error("todo")
-
-  def hasSubsequence[A](l: List[A], sub: List[A]): Boolean = sys.error("todo")
+  def hasSubsequence[A](l: List[A], sub: List[A]): Boolean = ???
 }
